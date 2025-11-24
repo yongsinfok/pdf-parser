@@ -53,8 +53,7 @@ function App() {
         formData.append('file', file);
 
         try {
-          // Use relative path for production, proxy handles it in dev
-          const uploadRes = await axios.post('/api/upload', formData, {
+          const uploadRes = await axios.post('http://localhost:8001/upload', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
           });
           currentFilePath = uploadRes.data.file_path;
@@ -69,7 +68,7 @@ function App() {
         setUploading(false);
       }
 
-      const res = await axios.post('/api/parse', {
+      const res = await axios.post('http://localhost:8001/parse', {
         file_path: currentFilePath,
         page_query: query,
       });

@@ -17,8 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Use /tmp for serverless environments (Vercel)
-UPLOAD_DIR = "/tmp/uploads"
+UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 class ParseRequest(BaseModel):
