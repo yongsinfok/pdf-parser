@@ -2,6 +2,8 @@ import os
 import shutil
 import re
 from fastapi import FastAPI, UploadFile, File, HTTPException
+import csv
+import io
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from docling.document_converter import DocumentConverter
@@ -188,14 +190,45 @@ async def parse_document(request: ParseRequest):
                 if table_page != -1:
                     if not pages or table_page in pages:
                         # Convert to CSV
+                        # Convert to CSV
                         try:
-                            df = table.export_to_dataframe()
-                            csv_content = df.to_csv(index=False)
+                            csv_content = ""
+                            
+                            # Try to use grid for CSV to ensure all rows are captured
+                            if hasattr(table, "grid") and table.grid:
+                                output = io.StringIO()
+                                writer = csv.writer(output)
+                                
+                                # Iterate over grid rows
+                                for row in table.grid:
+                                    row_data = []
+                                    for cell in row:
+                                        text = ""
+                                        if hasattr(cell, "text"):
+                                            text = cell.text
+                                        row_data.append(text)
+                                    writer.writerow(row_data)
+                                csv_content = output.getvalue()
+                            
+                            # If grid extraction failed or wasn't available, fallback to dataframe
+                            if not csv_content:
+                                df = table.export_to_dataframe()
+                                csv_content = df.to_csv(index=False)
+                            
+                            # Generate preview (using dataframe for convenience if possible)
+                            preview = ""
+                            try:
+                                df = table.export_to_dataframe()
+                                # Show all rows in preview, or at least more than 5
+                                preview = df.to_markdown(index=False)
+                            except:
+                                pass # Ignore preview errors if CSV was generated
+
                             extracted_tables.append({
                                 "id": i,
                                 "page": table_page,
                                 "csv": csv_content,
-                                "preview": df.head().to_markdown(index=False) # Optional preview
+                                "preview": preview
                             })
                         except Exception as e:
                             print(f"Error converting table {i} to CSV: {e}")
