@@ -1,26 +1,23 @@
 # Agent Instructions for MarkItDown Web App
 
-## Project Overview
-A web application for uploading PDFs and parsing specific pages using the MarkItDown library.
-
 ## Tech Stack
-- **Backend**: Python, FastAPI, Uvicorn, MarkItDown, Pydantic
+- **Backend**: Python, FastAPI, Uvicorn, MarkItDown, Pydantic, PyMuPDF
 - **Frontend**: React, Vite, Axios, React-Markdown
 - **Runtime**: Node.js (>=20.19.0), Python
 
-## Development Setup
+## Development
+- **Run All**: `start_dev.bat`
+- **Backend**: `cd backend && pip install -r requirements.txt && python main.py` (Port: 8001)
+- **Frontend**: `cd frontend && npm install && npm run dev` (Port: 5173)
+- **Linting**: `cd frontend && npm run lint`
 
-### Backend
-1. Navigate to `backend/`
-2. Install dependencies: `pip install -r requirements.txt`
-3. Run the server: `python main.py` (runs on `http://localhost:8001`)
-   - *Note: You can also use the provided `start_backend.bat`*
+## Testing
+- **Backend**: `python backend/test_markitdown.py` or `python backend/test_markitdown_with_pdf.py`
 
-### Frontend
-1. Navigate to `frontend/`
-2. Install dependencies: `npm install`
-3. Run dev server: `npm run dev` (runs on `http://localhost:5173`)
-   - *Note: You can also use the provided `start_frontend.bat`*
+## Usage
+1. Open `http://localhost:5173`.
+2. Upload PDF and enter page range (e.g., `1-5`, `10, 12-15`).
 
-## Known Quirks & Gotchas
-- **Port Conflicts**: The backend uses port `8001`. If this port is busy, you will need to update the frontend's API calls to point to the new port.
+## Known Quirks
+- **Port Conflicts**: If backend port changes from 8001, update frontend API base URL.
+- **File Storage**: Uploaded files are in `backend/uploads/`.
