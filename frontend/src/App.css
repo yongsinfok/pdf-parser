@@ -69,10 +69,27 @@ h2 {
   color: #fff;
 }
 
+/* ... existing styles ... */
+
 .input-group {
   display: flex;
-  gap: 1rem;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-wrapper {
+  width: 100%;
+}
+
+.button-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.text-input:disabled {
+  background-color: #2a2a2a;
+  color: #666;
+  cursor: not-allowed;
 }
 
 .file-input {
@@ -123,12 +140,27 @@ h2 {
   opacity: 0.7;
 }
 
-.result-area {
-  background: #2a2a2a;
-  padding: 2rem;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  margin-top: 2rem;
+.result-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.result-title {
+  margin: 0;
+}
+
+.card-title {
+  margin: 0;
+}
+
+.result-header {
+  margin: 0;
+}
+
+.table-title {
+  margin: 0;
 }
 
 .markdown-content {

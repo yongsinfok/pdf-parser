@@ -7,3 +7,4 @@ dist
 uploads
 backend/__pycache__
 backend/uploads
+.aider*

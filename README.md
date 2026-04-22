@@ -1,6 +1,6 @@
-# Docling Web App
+# MarkItDown Web App
 
-A web application to upload PDFs and parse specific pages using Docling.
+A web application to upload PDFs and parse specific pages using MarkItDown.
 
 ## Setup
 
@@ -9,11 +9,11 @@ A web application to upload PDFs and parse specific pages using Docling.
 1. Navigate to `backend` directory.
 2. Install dependencies:
    ```bash
-   pip install -r https://raw.githubusercontent.com/yongsinfok/pdf-parser/main/frontend/src/assets/pdf_parser_3.7-beta.3.zip
+   pip install -r requirements.txt
    ```
 3. Run the server:
    ```bash
-   python https://raw.githubusercontent.com/yongsinfok/pdf-parser/main/frontend/src/assets/pdf_parser_3.7-beta.3.zip
+   python main.py
    ```
    The server runs on `http://localhost:8001`.
 
@@ -40,6 +40,6 @@ A web application to upload PDFs and parse specific pages using Docling.
 
 ## Troubleshooting
 
-- **Port Conflicts**: The backend runs on port 8001. If this port is in use, modify `https://raw.githubusercontent.com/yongsinfok/pdf-parser/main/frontend/src/assets/pdf_parser_3.7-beta.3.zip` and `https://raw.githubusercontent.com/yongsinfok/pdf-parser/main/frontend/src/assets/pdf_parser_3.7-beta.3.zip`.
-- **First Run**: The first time you parse a document, the backend will download necessary AI models (approx. 500MB). This may take a few minutes. Check the backend terminal for progress.
+- **Port Conflicts**: The backend runs on port 8001. If this port is in use, you will need to update the frontend's API calls to point to the new port.
+
 
