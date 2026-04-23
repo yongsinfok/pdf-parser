@@ -10,6 +10,11 @@ from pydantic import BaseModel
 from markitdown import MarkItDown
 import fitz  # PyMuPDF
 from fastapi.responses import Response
+import pytesseract
+from PIL import Image
+
+pytesseract.pytesseract.tesseract_cmd = r'C:\Users\yong-sin.fok\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
+from pytesseract import Output
 
 app = FastAPI()
 
@@ -53,25 +58,57 @@ def parse_page_query(query: str):
         return None
     return sorted(list(pages))
 
+def is_page_scanned(page):
+    """Returns True if the page is scanned (has little to no text but has images)."""
+    text = page.get_text().strip()
+    if not text:
+        return True
+    if len(text) < 50:
+        return True
+    return False
+
+def get_ocr_text_for_page(page):
+    """Returns the OCR text for the entire page."""
+    pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
+    img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+    return pytesseract.image_to_string(img)
+
+def get_ocr_table_data(page, table):
+    """
+    Attempts to improve table data by performing OCR on each cell.
+    Uses bounding boxes of cells to guide the OCR process.
+    """
+    try:
+        cells = table.cells
+        if not cells:
+            return None
+            
+        new_data = []
+        for row_cells in cells:
+            row_data = []
+            for cell in row_cells:
+                # cell is a Rect (x0, y0, x1, y1)
+                pix = page.get_pixmap(clip=cell, matrix=fitz.Matrix(2, 2))
+                img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                text = pytesseract.image_to_string(img).strip()
+                row_data.append(text)
+            new_data.append(row_data)
+        return new_data
+    except Exception as e:
+        print(f"OCR Table Error: {e}")
+        return None
+
 def get_markdown_preview(data):
     if not data:
         return ""
-    
-    # Find max columns
     max_cols = max(len(row) for row in data)
-    
     md_rows = []
     for i, row in enumerate(data):
-        # Pad row with empty strings
         row_padded = [str(item) if item is not None else "" for item in row]
         row_padded += [""] * (max_cols - len(row_padded))
         md_rows.append("| " + " | ".join(row_padded) + " |")
-        
         if i == 0:
-            # Add separator after header
-            separator = "| " + " | ".join(["---"] * max_cols) + " |"
-            md_rows.append(separator)
-            
+            md_rows.append("| " + " | ".join(["---"] * max_cols) + " |")
     return "\n".join(md_rows)
 
 def process_document(file_path, page_query):
@@ -108,6 +145,7 @@ def process_document(file_path, page_query):
 
         for page_no in pages_to_process:
             page_idx = page_no - 1
+            page = doc[page_idx]
             
             with tempfile.TemporaryDirectory() as tmpdir:
                 temp_pdf_path = os.path.join(tmpdir, f"page_{page_idx}.pdf")
@@ -117,14 +155,23 @@ def process_document(file_path, page_query):
                 new_doc.save(temp_pdf_path)
                 new_doc.close()
 
-                res = md_converter.convert(temp_pdf_path)
-                all_content.append(res.text_content)
+                if is_page_scanned(page):
+                    page_text = get_ocr_text_for_page(page)
+                    all_content.append(page_text)
+                else:
+                    res = md_converter.convert(temp_pdf_path)
+                    all_content.append(res.text_content)
                 
-            page = doc[page_idx]
             tabs = page.find_tables()
             for i, table in enumerate(tabs.tables):
-                data = table.extract()
-                if not data:
+                if is_page_scanned(page):
+                    data = get_ocr_table_data(page, table)
+                    if data is None:
+                        data = table.extract()
+                else:
+                    data = table.extract()
+                
+                if not data or not any(any(cell is not None and str(cell).strip() for cell in row) for row in data):
                     continue
                 
                 csv_output = io.StringIO()

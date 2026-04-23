@@ -3,3 +3,6 @@ uvicorn
 python-multipart
 markitdown
 pymupdf
+pytesseract
+pillow
+pdf2image
